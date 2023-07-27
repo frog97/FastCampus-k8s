@@ -5,8 +5,8 @@ metadata:
  name: ap-northeast-2a
 spec:
   securityGroups: 
-    - <Security Group ID>
-  subnet: <Subnet ID 1>
+    - sg-08673cba2b1bef174
+  subnet: subnet-05f46a6cf13616ef5
 ---
 apiVersion: crd.k8s.amazonaws.com/v1alpha1
 kind: ENIConfig
@@ -14,5 +14,5 @@ metadata:
  name: ap-northeast-2c
 spec:
   securityGroups: 
-    - <Security Group ID>
-  subnet: <Subnet ID 2>
+    - sg-08673cba2b1bef174
+  subnet: subnet-0c443666a360fd1bb

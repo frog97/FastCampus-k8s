@@ -1,10 +1,10 @@
-resource "aws_eks_node_group" "test-eks-nodegroup" {
-  cluster_name    = aws_eks_cluster.test-eks-cluster.name
-  node_group_name = "test-eks-nodegroup"
-  node_role_arn   = aws_iam_role.test-iam-role-eks-nodegroup.arn
-  subnet_ids      = ["<Subnet ID 1>","<Subnet ID 2>"]
-  instance_types = ["t3a.medium"]
-  disk_size = 20
+resource "aws_eks_node_group" "hh-fc-k8s4dev-eks-nodegroup" {
+  cluster_name    = aws_eks_cluster.hh-fc-k8s4dev-eks-cluster.name
+  node_group_name = "hh-fc-k8s4dev-eks-nodegroup"
+  node_role_arn   = aws_iam_role.hh-fc-k8s4dev-iam-role-eks-nodegroup.arn
+  subnet_ids      = ["subnet-06891e5a7b4742071","subnet-09869431922bdc2d3"]
+  #instance_types = ["t3a.medium"]
+  #disk_size = 20
 
   labels = {
     "role" = "eks-nodegroup"
@@ -17,12 +17,12 @@ resource "aws_eks_node_group" "test-eks-nodegroup" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.test-iam-policy-eks-nodegroup,
-    aws_iam_role_policy_attachment.test-iam-policy-eks-nodegroup-cni,
-    aws_iam_role_policy_attachment.test-iam-policy-eks-nodegroup-ecr,
+    aws_iam_role_policy_attachment.hh-fc-k8s4dev-iam-policy-eks-nodegroup,
+    aws_iam_role_policy_attachment.hh-fc-k8s4dev-iam-policy-eks-nodegroup-cni,
+    aws_iam_role_policy_attachment.hh-fc-k8s4dev-iam-policy-eks-nodegroup-ecr,
   ]
 
   tags = {
-    "Name" = "${aws_eks_cluster.test-eks-cluster.name}-worker-node"
+    "Name" = "${aws_eks_cluster.hh-fc-k8s4dev-eks-cluster.name}-worker-node"
   }
 }

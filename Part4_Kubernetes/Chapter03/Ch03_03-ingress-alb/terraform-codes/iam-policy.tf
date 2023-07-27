@@ -1,5 +1,5 @@
-resource "aws_iam_policy" "test-alb-iam-policy" {
-  name        = "test-alb-iam-policy"
+resource "aws_iam_policy" "hhtest-alb-iam-policy" {
+  name        = "hhtest-alb-iam-policy"
   path        = "/"
 
   policy = jsonencode(
