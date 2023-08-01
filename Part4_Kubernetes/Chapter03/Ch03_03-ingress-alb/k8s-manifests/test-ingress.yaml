@@ -1,13 +1,13 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1 # https://kubernetes.io/ko/docs/concepts/services-networking/ingress/ 
 kind: Ingress
 metadata:
   name: ingress-2048
   namespace: test-ingress-alb
   annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/subnets: subnet-0cb665e7495dd4c34, subnet-0c77c633611292b12
+    kubernetes.io/ingress.class: alb # alb 생성 
+    alb.ingress.kubernetes.io/scheme: internet-facing #외부 사용 가능. 반대 internal
+    alb.ingress.kubernetes.io/target-type: ip #pod ip 로 매핑. 인스턴스 타입도 있음. 
+    alb.ingress.kubernetes.io/subnets: subnet-0249ec884e547317d, subnet-00a7ece256e3f0e3e
 spec:
   rules:
     - http:

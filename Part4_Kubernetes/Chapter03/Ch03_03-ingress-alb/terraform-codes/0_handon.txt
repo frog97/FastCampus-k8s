@@ -1,0 +1,55 @@
+
+
+# kube ctl 다운로드
+cd
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
+sudo chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/
+kubectl version
+
+
+aws configure
+
+AWS Access Key ID [None]: AKIAQVZWWOD7ZPR7RE5S
+AWS Secret Access Key [None]: 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
+Default region name [None]: ap-northeast-2
+Default output format [None]: 
+
+aws eks update-kubeconfig --region ap-northeast-2 --name hhtest-eks-cluster       
+kubectl get po -A
+sudo yum install git
+git clone https://github.com/frog97/FastCampus-k8s.git
+cd /home/ssm-user/FastCampus-k8s/Part4_Kubernetes/Chapter03/Ch03_03-ingress-alb/k8s-manifests
+kubectl create namespace hhtest-ingress-alb
+kubectl get ns
+kubectl create -f test-deployment-game.yaml
+
+kubectl create -f test-ingress.yaml
+kubectl get po -n hhtest-ingress-alb
+kubectl get svc -n hhtest-ingress-alb
+
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp 
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+eksctl utils associate-iam-oidc-provider --region=ap-northeast-2 --cluster=hhtest-eks-cluster --approve
+
+eksctl create iamserviceaccount \
+--cluster=hhtest-eks-cluster \
+--namespace=kube-system \
+--name=aws-load-balancer-controller \
+--attach-policy-arn=arn:aws:iam::046822486271:policy/hhtest-alb-iam-policy \
+--override-existing-serviceaccounts \
+--approve
+
+kubectl create -f cert-manager.yaml
+kubectl create -f alb-controller.yaml
+kubectl get po -n kube-system
+
+
+
+
+#clean up 
+eksctl delete iamserviceaccount --cluster=hhtest-eks-cluster --namespace=kube-system --name=aws-load-balancer-controller
+
+terraform destroy --auto-approve
