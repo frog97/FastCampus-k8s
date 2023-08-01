@@ -9,8 +9,8 @@ kubectl version
 
 aws configure
 
-AWS Access Key ID [None]: AKIAQVZWWOD7ZPR7RE5S
-AWS Secret Access Key [None]: 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
+AWS Access Key ID [None]: A
+AWS Secret Access Key [None]: G
 Default region name [None]: ap-northeast-2
 Default output format [None]: 
 
