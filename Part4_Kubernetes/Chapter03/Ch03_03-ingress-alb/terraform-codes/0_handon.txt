@@ -122,5 +122,6 @@ ingress-2048   <none>   *       k8s-hhtestin-ingress2-8aca01fe69-781206187.ap-no
 
 
 #clean up 
+kubectl delete -f alb-controller.yaml
 eksctl delete iamserviceaccount --cluster=hhtest-eks-cluster --namespace=kube-system --name=aws-load-balancer-controller
 terraform destroy --auto-approve
