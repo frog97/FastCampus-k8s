@@ -7,7 +7,7 @@ resource "aws_instance" "hhtest-ec2-bastion" {
   availability_zone           = "ap-northeast-2a"
 
   iam_instance_profile        = aws_iam_instance_profile.hhtest-ec2-instance-profile.name
-  key_name                    = "hhtest-kp-bastion"
+  key_name                    = "hhtest-kp-bastion" # 미리 생성 된 key pair
 
   capacity_reservation_specification {
     capacity_reservation_preference = "open"
