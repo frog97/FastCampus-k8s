@@ -1,3 +1,5 @@
+#### 순서 틀리면 절대 안됨... 그리고 중간 결과도 똑같이 나와야 진행 가능함.
+
 # node 를 private subnet에 넣었으므로 
 kubectl get po -A 이런거 타임아웃 생김. -> bastion 서버 있어야 함.
 
@@ -67,6 +69,7 @@ NAME                                 SECRETS   AGE
 attachdetach-controller              0         45m
 aws-cloud-provider                   0         45m
 aws-load-balancer-controller         0         30s
+....
 #####################
 
 kubectl get sa aws-load-balancer-controller -n kube-system -o yaml
@@ -75,31 +78,47 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::046822486271:role/my-role
-  creationTimestamp: "2023-08-02T00:03:06Z"
+    eks.amazonaws.com/role-arn: arn:aws:iam::046822486271:role/eksctl-hhtest-eks-cluster-addon-iamserviceac-Role1-17T7G1R9SKXDK
+  creationTimestamp: "2023-08-02T22:58:14Z"
   labels:
     app.kubernetes.io/managed-by: eksctl
   name: aws-load-balancer-controller
   namespace: kube-system
-  resourceVersion: "7251"
-  uid: 668b9a2f-901c-4288-83f5-d9d30f9fbe56
+  resourceVersion: "6122"
+  uid: f7705d76-7563-4ba6-97d9-d3c9165b24e7
 ######
 
 
 kubectl create -f cert-manager.yaml
+kubectl get po -n cert-manager
+#####
+NAME                                       READY   STATUS    RESTARTS   AGE
+cert-manager-7564b796c7-5qj8j              1/1     Running   0          31s
+cert-manager-cainjector-58bcd74fd8-wn7wx   1/1     Running   0          31s
+cert-manager-webhook-5bd9444ff7-qb6ls      1/1     Running   0          31s
+####
+
 kubectl create -f alb-controller.yaml
 kubectl get po -n kube-system
+kubectl get deploy  aws-load-balancer-controller  -n kube-system
 
-kubectl create -f test-ingress.yaml
-kubectl get po -n hhtest-ingress-alb
-kubectl get svc -n hhtest-ingress-alb
+###
+bastion 에서 서브넷 (pub. 1과 2로) 이름 변경 해야함.
+ingress니까... public과 연결되어야 함. 
+###
+콘솔에가서 LB 확인하고... EP 들어가면 사용 가능
 
-
-
+DNS name Info
+k8s-hhtestin-ingress2-8aca01fe69-781206187.ap-northeast-2.elb.amazonaws.com (A Record)
+###
 
 # ingress 배포
 kubectl create -f test-ingress.yaml
 kubectl get ing -n hhtest-ingress-alb
+####
+NAME           CLASS    HOSTS   ADDRESS                                                                       PORTS   AGE
+ingress-2048   <none>   *       k8s-hhtestin-ingress2-8aca01fe69-781206187.ap-northeast-2.elb.amazonaws.com   80      7s
+####
 
 
 #clean up 
