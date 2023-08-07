@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nlb-sample-app
-  namespace: test-service-nlb
+  name: hhnlb-sample-app
+  namespace: hhtest-service-nlb
 spec:
   replicas: 3
   selector:
