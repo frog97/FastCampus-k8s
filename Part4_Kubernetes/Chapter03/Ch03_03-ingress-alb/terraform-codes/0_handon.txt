@@ -130,7 +130,7 @@ kubectl get deploy  aws-load-balancer-controller  -n kube-system
 # ingress 배포
 ###
 # *************** bastion 에서 서브넷 (pub. 1과 2로) 이름 변경 해야함.
-# ingress니까... public과 연결되어야 함. 
+rovisioner: efs.csi.aws.com# ingress니까... public과 연결되어야 함. 
 ###
 
 ## LB 없는 것 콘솔에서 확인 

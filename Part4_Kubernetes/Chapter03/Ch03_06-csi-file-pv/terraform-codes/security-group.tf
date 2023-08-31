@@ -20,7 +20,7 @@ resource "aws_security_group" "hhtest-sg-efs" {
   }
 
   name   = "hhtest-sg-efs"
-  vpc_id = aws_vpc.test-vpc.id
+  vpc_id = aws_vpc.hhtest-vpc.id
 }
 
 ########### EKS Security Group ###########
