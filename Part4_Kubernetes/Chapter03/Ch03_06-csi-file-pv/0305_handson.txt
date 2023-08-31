@@ -1,0 +1,401 @@
+실습 아키텍처 구성사항 #1
+1. AWS Network 구성
+- VPC1개, Public Subnet 2개, Private Subnet 2개
+- Internet Gateway 1개, NAT Gateway 1개
+
+2. AWS EKS 구성
+- EKS Cluster 1개, EKS NodeGroup1개(2개 Worker Node 생성)
+- EC2 Bastion VM 1개 (EKS 접속용)
+
+실습 아키텍처 구성사항 #2
+3.1 Terraform으로 Backend생성
+- IaC 경로 : Ch03_05-csi-block-pv > terraform-backend
+3.2 terraform 명령어 실행
+$ terraform init
+$ terraform plan
+$ terraform apply
+
+실습 아키텍처 구성사항 #3
+4.1 Terraform으로 AWS 클라우드 아키텍처 구성 경로
+- IaC 경로 : Ch03_05-csi-block-pv > terraform-codes
+
+4.2 Bastion 서버용 Key Pair 생성
+- AWS Management 콘솔 > EC2 > 네트워크 및 보안 > 키 페어 > 키 페어 생성 >
+"hhtest-kp-bastion" 이름의 RSA방식의 키 페어 생성 및 다운로드
+
+실습 아키텍처 구성사항 #4
+4.3 terraform 명령어 실행하여 전체 아키텍처 구성
+$ terraform init
+$ terraform plan
+$ terraform apply
+
+4.4 아키텍처 구성 이후 Bastion 서버 연결 방법
+- AWS Management 콘솔 > EC2 > Bastion VM 선택 > 우측 상단"연결 버튼"클릭 >
+SSH 연결 방식에 나와있는 방식대로 수행하여 연결
+
+실습 아키텍처 구성사항 #5
+
+5.1 Bastion VM에서 kubectl 다운로드
+$ 
+bash
+cd
+curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl
+
+5.2 Bastion VM에서 kubectl 실행 권한 부여 및 bin PATH로 이동
+$ 
+chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+
+5.3 kubectl 버전 확인
+$ 
+kubectl version
+
+cd
+curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl
+chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+kubectl version
+
+
+
+
+실습 아키텍처 구성사항 #6
+6.1 Bastion VM에서 awscli 설치
+$ 
+#sudo apt update
+# sudo yum update -y
+
+$ 
+#sudo apt install -y awscli
+# sudo yum install -y awscli
+
+
+6.2 Bastion VM에서 aws configure 설정
+- 본인의 AWS 계정의 Access Key와 Secret Key, Region 설정 (Output : json)
+$ 
+aws configure
+
+5.3 aws configure 설정 확인
+$ 
+aws configure list
+
+실습 아키텍처 구성사항 #7
+7.1 Bastion VM에서 kubeconfig 설정
+#$ aws eks update-kubeconfig --name <생성된 EKS 클러스터명>
+aws eks update-kubeconfig --name hhtest-eks-cluster
+
+
+7.2 kubeconfig 파일 확인
+- 홈 디렉토리에서 파일 존재 확인
+$ cat ~/.kube/config
+7.3 kubectl 동작 확인
+$ 
+kubectl get nodes; kubectl get pods -A
+
+실습 아키텍처 구성사항 #8
+
+8.1 Bastion VM에서 eksctl 다운로드
+$ 
+cd
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+
+8.2 eksctl을 바이너리 Path로 이동
+$ 
+sudo mv /tmp/eksctl /usr/local/bin
+
+8.3 eksctl 동작 확인
+$ 
+eksctl version
+
+cd
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+
+
+1. AWS EBS CSI Driver 설치 #1
+
+1.1 IAM Role 및 EKS내 서비스 어카운트 생성
+$ 
+#eksctl create iamserviceaccount 
+--name ebs-csi-controller-sa \
+--namespace kube-system \
+--cluster <EKS Cluster명> \
+--attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+--approve \
+--role-only \
+--role-name AmazonEKS_EBS_CSI_DriverRole
+
+eksctl utils associate-iam-oidc-provider --region=ap-northeast-2 --cluster=hhtest-eks-cluster --approve
+eksctl create iamserviceaccount --name ebs-csi-controller-sa --namespace kube-system --cluster hhtest-eks-cluster --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy --approve --role-only --role-name AmazonEKS_EBS_CSI_DriverRole
+
+1. AWS EBS CSI Driver 설치 #2
+1.2 eksctl 애드온을 통한 설치
+$ eksctl create addon --name aws-ebs-csi-driver --cluster <EKS 클러스터명> --service-account-role-arn arn:aws:iam::<AWS 계정 ID>:role/AmazonEKS_EBS_CSI_DriverRole --force
+eksctl create addon --name aws-ebs-csi-driver --cluster hhtest-eks-cluster --service-account-role-arn arn:aws:iam::046822486271:role/AmazonEKS_EBS_CSI_DriverRole --force
+
+1.3 eksctl 애드온을 통한 설치 상태 확인
+$ eksctl get addon --name aws-ebs-csi-driver --cluster <EKS 클러스터명>
+eksctl get addon --name aws-ebs-csi-driver --cluster hhtest-eks-cluster
+
+
+1.4 AWS EBS CSI Driver 설치 확인
+$ kubectl get pods -n kube-system | grep ebs-csi-controller
+kubectl get pods -n kube-system | grep ebs-csi-controller
+######################### 8/25
+
+kubectl describe sa ebs-csi-controller-sa -n kube-system #강사님의 결과와 다른 Moutable Secret과 Token이 없음.
+kubectl describe sa ebs-csi-controller-sa -n kube-system #강사님의 결과와 다른 Moutable Secret과 Token이 없음.
+
+
+sudo yum install git -y
+cd
+git clone https://github.com/frog97/FastCampus-k8s.git
+cd /home/ssm-user/FastCampus-k8s/Part4_Kubernetes/Chapter03/Ch03_05-csi-block-pv/k8s-manifests
+
+
+2. Namespace 구성, 예제 K8s Manifest 배포, Block Storage PV 생성
+2.1 Namespace 구성 명령어
+$ 
+kubectl create namespace hhtest-csi-block-pv
+kubectl get ns
+
+2.2 예제 K8s Manifest 배포
+- K8s Manifest 경로 : Ch03_05-csi-block-pv > k8s-manifests
+- K8s Manifest 배포 명령어 : 
+kubectl create -f ./ -n hhtest-csi-block-pv
+kubectl get all -n hhtest-csi-block-pv
+kubectl get pvc -n hhtest-csi-block-pv
+
+kubectl describe po app -n hhtest-csi-block-pv
+################### 아래와 같은 내용이 나오는 것 확인 가능
+Volumes:
+  persistent-storage:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  ebs-claim
+    ReadOnly:   false
+######################3
+
+3. Block Storage PV 자동 생성 확인 및 볼륨 마운트 확인 #1
+3.1 Block Storage PV 자동 생성 확인 명령어
+$ kubectl get pv
+$ kubectl get pvc -n hhtest-csi-block-pv
+
+kubectl get pv
+kubectl describe pv pvc-2f794bdd-3a8a-4981-ba1f-707ca2c9bf61 -n hhtest-csi-block-pv
+
+kubectl describe pvc ebs-claim -n hhtest-csi-block-pv
+
+kubectl describe pod app -n hhtest-csi-block-pv
+
+
+################# 8/29
+
+3.2 볼륨 마운트 확인
+$ kubectl exec -it <POD명> -n hhtest-csi-block-pv -- df -h
+$ kubectl exec -it <POD명> -n hhtest-csi-block-pv -- cat /data/out.txt
+kubectl exec -it app -n hhtest-csi-block-pv -- df -h
+############################
+/dev/nvme1n1    3.8G   28K  3.8G   1% /data
+############################
+kubectl exec -it app -n hhtest-csi-block-pv -- cat /data/out.txt
+
+3. Block Storage PV 자동 생성 확인 및 볼륨 마운트 확인 #2
+3.3 Block Storage PV에 연결된 AWS EBS 정보 확인 명령어
+$ kubectl describe pv <PV명>
+- VolumeHandle값 확인
+
+
+kubectl describe pv <PV명>
+
+3.4 AWS에서 EBS 정보 확인
+- 경로 : AWS Management Console > EC2 > Elastic Block Store > 볼륨
+
+4. 데이터/파일 쓰기 및 POD 삭제 후 볼륨 보존 확인
+$ kubectl exec -it <POD명> -n hhtest-csi-block-pv -- sh -c 'echo "First data" >> /data/out.txt'
+$ kubectl exec -it <POD명> -n hhtest-csi-block-pv -- sh -c 'echo "Second data" >> /data/out.txt'
+
+kubectl exec -it app -n hhtest-csi-block-pv -- sh -c 'echo "First data" >> /data/out.txt'
+kubectl exec -it app -n hhtest-csi-block-pv -- cat /data/out.txt
+##### 5초마다 시간 쓰니까.. 시간 좀 두면 좋다.
+kubectl exec -it app -n hhtest-csi-block-pv -- sh -c 'echo "Second data" >> /data/out.txt'
+kubectl exec -it app -n hhtest-csi-block-pv -- cat /data/out.txt
+
+4.2 POD 삭제
+$ kubectl delete po <POD명> -n hhtest-csi-block-pv
+kubectl delete pod app -n hhtest-csi-block-pv
+
+4.3 볼륨 보존 확인
+
+$ kubectl get pv
+- AWS 확인 경로 : AWS Management Console > EC2 > Elastic Block Store > 볼륨
+kubectl get pv
+
+5. POD 생성 후 자동 볼륨 마운트 확인 및 데이터/파일 읽기 확인
+
+5.1 POD 재 생성
+- K8s Manifest 경로 : Ch03_05-csi-block-pv > k8s-manifests
+- K8s Manifest 배포 명령어 : $ kubectl create -f test-csi-block-pv-pod.yaml
+kubectl create -f test-csi-block-pv-pod.yaml -n hhtest-csi-block-pv
+kubectl get pod -n hhtest-csi-block-pv -o wide #같은 노드에 스케줄링 됨
+
+5.2 자동 볼륨 마운트 확인
+$ kubectl exec -it <POD명> -n hhtest-csi-block-pv -- df -h
+kubectl exec -it app -n hhtest-csi-block-pv -- df -h
+
+5.3 데이터/파일 읽기 확인
+$ kubectl exec -it <POD명> -n hhtest-csi-block-pv -- cat /data/out.txt
+- First 및 Second data 존재 확인
+kubectl exec -it app -n hhtest-csi-block-pv -- cat /data/out.txt
+
+
+#################8/29 ####################
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #1
+검증 대상
+• POD에서 사용되는 Persistent Volume은 EKS Worker Node기준으로 
+Volume을 Attach한 후, Node내부에 스케쥴링된 POD에 Volume의
+파일시스템을 Mount해서 사용하는 것이다.
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #2
+검증 내용 - (1) 구성되어 있는 검증용 K8s Resource 현황 확인
+• POD, PersistentVolumeClaim, PersistentVolume, NODE 현황 확인
+$ kubectl get po
+$ kubectl get pvc
+$ kubectl get pv
+$ kubectl get no
+
+kubectl delete app  -n hhtest-csi-block-pv
+cd /home/ssm-user/FastCampus-k8s/Part4_Kubernetes/Chapter03/Ch03_05-csi-block-pv/add-example
+kubectl create -f ./  -n hhtest-csi-block-pv
+
+kubectl get po -o wide -n hhtest-csi-block-pv
+kubectl get pvc -n hhtest-csi-block-pv
+kubectl get pv -n hhtest-csi-block-pv
+kubectl get no -n hhtest-csi-block-pv
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #3
+(2) POD에 Mount된 Volume 상세내역
+•  PersistentVolumeClaim 맵핑 내역 및 Mount된 Volume 현황
+•  여기서는 POD가 ip-172-32-2-60 노드에서 실행중임을 알 수 있다.
+$ kubectl get po <POD명> -o yaml | grep -C5 vol
+$ kubectl describe po <POD명>
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #5
+(3) PersistentVolumeClaim(PVC) 상세내역
+• PersistentVolume 맵핑 내역 및 EKS Worker Node 현황
+• 여기서는 PersistentVolume이 ip-172-32-2-60 노드로 선택
+$ kubectl describe pvc <PVC명>
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #6
+(4) PersistentVolume(PV) 상세내역
+ PV 생성
+• PersistentVolume 상세 내역 및 EBS Volume 맵핑 현황
+• 여기서는 PersistentVolume이 vol-06d8fd91e006505c6 볼륨으로 맵핑
+$ kubectl describe pv <PV명>
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #7
+• (4)번에서 확인된 Volume-ID로 볼륨에서 검색하면 맵핑된 EBS 상세정보 출력
+• 여기서는 PersistentVolume에서 확인한 vol-06d8fd91e006505c6로 검색
+• 해당 볼륨이 Attach된 EC2 VM 인스턴스의 ID는 i-0c1e9e24e8c2d25af 이다.
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #8
+• (5)번에서 확인된 EC2 VM ID로 인스턴스에서 검색하면 EC2 VM 상세정보 출력
+• 여기서는 EBS볼륨에서 확인한 i-0c1e9e24e8c2d25af로 검색
+• EBS가 Attach된 EC2 VM 인스턴스의 프라이빗 IP DNS 이름은 ip-172-32-2-60 노드
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #9
+(7) 가설1 : POD를 Restart하면 다른 EKS Worker Node로 스케쥴링이 되고
+PV Mount가 바뀔 것이다?
+• 확인을 위해 POD를 배포할 때 사용한 Deployment를 Rollout Restart한다.
+$ kubectl get deploy
+$ kubectl get po -o wide
+$ kubectl rollout restart deploy <Deployment명>
+$ kubectl get po -o wide
+
+kubectl get deploy -n hhtest-csi-block-pv
+kubectl get po -o wide -n hhtest-csi-block-pv
+kubectl rollout restart deploy app  -n hhtest-csi-block-pv
+kubectl get po -o wide -n hhtest-csi-block-pv
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #10
+•Deployment의 Rollout Restart를 몇번을
+해도 PV가 Mount된 ip-172-32-2-60
+노드에만 스케쥴링이 되는 것을 알 수 있다.
+$ kubectl describe po <POD명>
+kubectl describe po app -n hhtest-csi-block-pv
+
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #11
+(8) 가설2 : POD가 실행중이고 및 PV가 Attach된 EKS Worker Node에 스케쥴링 못하도록 막는다면?
+• 확인을 위해 해당 노드에 Cordon을 적용한다.
+• Cordon 적용후, POD를 배포할 때 사용한 Deployment를 Rollout Restart한다.
+$ kubectl get no
+$ kubectl cordon <POD가 기동중인 EKS Worker Node명>
+$ kubectl get deploy
+$ kubectl get no
+$ kubectl rollout restart deploy <Deployment명>
+$ kubectl get po
+$ kubectl describe po <POD명>
+
+kubectl get no
+kubectl cordon  ip-172-31-37-127.ap-northeast-2.compute.internal
+
+kubectl get deploy -n hhtest-csi-block-pv
+kubectl get no -n hhtest-csi-block-pv
+kubectl rollout restart deploy app -n hhtest-csi-block-pv
+kubectl get po -n hhtest-csi-block-pv
+kubectl describe po app -n hhtest-csi-block-pv
+
+######################3
+Events:
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  2s    default-scheduler  0/2 nodes are available: 1 node(s) had volume node affinity conflict, 1 node(s) were unschedulable. preemption: 0/2 nodes are available: 2 Preemption is nothelpful for scheduling..
+#################################
+
+
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #12
+• Deployment의 Rollout Restart를 해서 새로 생성된 POD부터는 Pending 상태가 된것을 확인 할 수 있다.
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #13
+•POD의 이벤트 내역을 보면 현재 Node Affinity Conflict 상태로 Pending이 걸린것을 확인 할 수 있다.
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #14
+(9) Cordon 상태의 노드를 다시 Uncordon을 통해 POD 스케쥴링이 되도록 만들면 어떻게 될까?
+• 확인을 위해 해당 노드에 Uncordon을 적용한다.
+• Uncordon 적용후, POD의 상태를 확인한다.
+$ kubectl get no
+$ kubectl uncordon <Cordon이 적용된 EKS Worker Node명>
+$ kubectl get no
+$ kubectl get deploy
+$ kubectl get po
+$ kubectl get po -o wide
+
+kubectl get no
+kubectl uncordon ip-172-31-37-127.ap-northeast-2.compute.internal
+
+kubectl get no -n hhtest-csi-block-pv
+kubectl get deploy -n hhtest-csi-block-pv
+kubectl get po -n hhtest-csi-block-pv
+kubectl get po -o wide -n hhtest-csi-block-pv
+ 
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #15
+•노드를 Uncordon하면 그 즉시 기존에 Pending 상태인 POD가 정상적으로 Running이 되는 것을 확인 할 수 있다.
+• POD가 스케쥴링된 노드는 기존에 실행되고 PV Mount가 된 ip-172-32-2-60 노드임을 확인 할 수 있다.
+
+추가 내용 ‒ Persistent Volume Mount 및 Volume Attach 검증 #16
+•POD의 이벤트 내역을 보면, Successfully assigned <POD명> to <Node명>이 명시가 되면서, 원래 실행된 노드에 정상적으로 스케쥴링이 된것을 확인 할 수 있다.
+
+
+
+#clean up 
+
+bastion
+kubectl delete -f ./ -n hhtest-csi-block-pv
+eksctl delete iamserviceaccount --cluster=hhtest-eks-cluster --namespace=kube-system --name=ebs-csi-controller-sa
+
+
+local.
+
+terraform destroy --auto-approve

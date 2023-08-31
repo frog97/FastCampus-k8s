@@ -18,4 +18,4 @@ spec:
               service:
                 name: service-2048
                 port:
-                  number: 80cd
+                  number: 80

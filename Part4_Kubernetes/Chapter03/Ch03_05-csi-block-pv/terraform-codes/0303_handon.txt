@@ -21,6 +21,7 @@ kubectl version
 kubectl get po -A
 
 sudo yum install git -y
+cd
 git clone https://github.com/frog97/FastCampus-k8s.git
 cd /home/ssm-user/FastCampus-k8s/Part4_Kubernetes/Chapter03/Ch03_03-ingress-alb/k8s-manifests
 
