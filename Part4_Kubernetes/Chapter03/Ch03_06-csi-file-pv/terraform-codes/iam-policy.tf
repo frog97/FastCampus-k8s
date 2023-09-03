@@ -1,7 +1,7 @@
 # ########### EFS IAM Policy ###########
 
 resource "aws_iam_policy" "test-efs-csi-iam-policy" {
-  name = "AmazonEKS_EFS_CSI_Driver_Policy"
+  name = "AmazonEKS_EFS_CSI_Driver_Policy2"
   path = "/"
   policy = <<POLICY
 {
