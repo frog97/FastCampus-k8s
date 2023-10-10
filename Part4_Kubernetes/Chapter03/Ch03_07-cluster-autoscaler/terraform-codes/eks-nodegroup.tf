@@ -1,8 +1,8 @@
-resource "aws_eks_node_group" "test-eks-nodegroup" {
-  cluster_name    = aws_eks_cluster.test-eks-cluster.name
-  node_group_name = "test-eks-nodegroup"
-  node_role_arn   = aws_iam_role.test-iam-role-eks-nodegroup.arn
-  subnet_ids      = [aws_subnet.test-private-subnet1.id, aws_subnet.test-private-subnet3.id]
+resource "aws_eks_node_group" "hhtest-eks-nodegroup" {
+  cluster_name    = aws_eks_cluster.hhtest-eks-cluster.name
+  node_group_name = "hhtest-eks-nodegroup"
+  node_role_arn   = aws_iam_role.hhtest-iam-role-eks-nodegroup.arn
+  subnet_ids      = [aws_subnet.hhtest-private-subnet1.id, aws_subnet.hhtest-private-subnet3.id]
   instance_types = ["t3a.medium"]
   disk_size = 20
 
@@ -17,12 +17,12 @@ resource "aws_eks_node_group" "test-eks-nodegroup" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.test-iam-policy-eks-nodegroup,
-    aws_iam_role_policy_attachment.test-iam-policy-eks-nodegroup-cni,
-    aws_iam_role_policy_attachment.test-iam-policy-eks-nodegroup-ecr,
+    aws_iam_role_policy_attachment.hhtest-iam-policy-eks-nodegroup,
+    aws_iam_role_policy_attachment.hhtest-iam-policy-eks-nodegroup-cni,
+    aws_iam_role_policy_attachment.hhtest-iam-policy-eks-nodegroup-ecr,
   ]
 
   tags = {
-    "Name" = "${aws_eks_cluster.test-eks-cluster.name}-worker-node"
+    "Name" = "${aws_eks_cluster.hhtest-eks-cluster.name}-worker-node"
   }
 }

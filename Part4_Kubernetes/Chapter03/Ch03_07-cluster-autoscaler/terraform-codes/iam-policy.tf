@@ -1,7 +1,7 @@
 ########### Cluster Autoscaler IAM Policy ###########
 
-resource "aws_iam_policy" "test-iam-policy-cluster-autoscaler" {
-  name = "test-iam-policy-cluster-autoscaler"
+resource "aws_iam_policy" "hhtest-iam-policy-cluster-autoscaler" {
+  name = "hhtest-iam-policy-cluster-autoscaler"
   path = "/"
 
   policy = <<POLICY
