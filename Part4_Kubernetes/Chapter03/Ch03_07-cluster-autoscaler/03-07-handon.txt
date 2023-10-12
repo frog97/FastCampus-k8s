@@ -17,6 +17,27 @@ $ terraform plan
 $ terraform apply
 6
 
+cd
+curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl
+chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+kubectl version
+
+
+aws configure
+
+
+
+
+aws eks update-kubeconfig --name hhtest-eks-cluster
+cat ~/.kube/config
+kubectl get nodes; kubectl get pods -A
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+
+
 3. eksctl로 IAM Role 및 EKS Service Account 적용
 3.1 IAM Role 및 EKS Service Account 적용
 $ eksctl create iamserviceaccount \
@@ -29,14 +50,22 @@ $ eksctl create iamserviceaccount \
 --region ap-northeast-2
 7
 
+
+eksctl utils associate-iam-oidc-provider --region=ap-northeast-2 --cluster=hhtest-eks-cluster --approve
+
 eksctl create iamserviceaccount \
 --name cluster-autoscaler \
 --namespace kube-system \
 --cluster hhtest-eks-cluster \
---attach-policy-arn arn:aws:iam::046822486271: policy/hhtest-iam-policy-cluster-autoscaler \
+--attach-policy-arn arn:aws:iam::046822486271:policy/hhtest-iam-policy-cluster-autoscaler \
 --approve \
 --override-existing-serviceaccounts \
 --region ap-northeast-2
+
+kubectl get sa -n kube-system | grep cluster-autoscaler
+ubectl get sa cluster-autoscaler -n kube-system  -o yaml
+
+
 
 
 4. Cluster Autoscaler 배포 및 설정
@@ -45,6 +74,20 @@ eksctl create iamserviceaccount \
 1.5 Cluster Autoscaler 배포 실행 명령어
 $ kubectl apply -f cluster-autoscaler.yaml
 8
+
+
+
+######cluster-autoscaler.yaml 파일 155번째 줄에 hhtest-eks-cluster 변경 해줘야함.
+sudo yum install git -y
+cd
+git clone https://github.com/frog97/FastCampus-k8s.git
+cd /home/ssm-user/FastCampus-k8s/Part4_Kubernetes/Chapter03/Ch03_07-cluster-autoscaler/k8s-manifests
+######cluster-autoscaler.yaml 파일 155번째 줄에 hhtest-eks-cluster 변경 해줘야함.
+kubectl apply -f cluster-autoscaler.yaml ######cluster-autoscaler.yaml 파일 155번째 줄에 hhtest-eks-cluster 변경 해줘야함.
+
+
+
+
 
 5. 10개 POD 배포 및 EKS Worker Node 자동 Scale-out 확인
 5.1 Namespace 구성 명령어
@@ -57,6 +100,12 @@ $ kubectl create namespace test-ca
 5.3 POD 및 Worker Node 개수 실시간 확인
 $ kubectl get po -n test-ca -w
 $ kubectl get no -w
+
+kubectl create namespace test-ca
+kubectl create -f ./deploy-pod.yaml
+kubectl get po -n test-ca
+kubectl get no
+
 9
 
 6. POD 2개로 축소 및 EKS Worker Node 자동 Scale-in 확인

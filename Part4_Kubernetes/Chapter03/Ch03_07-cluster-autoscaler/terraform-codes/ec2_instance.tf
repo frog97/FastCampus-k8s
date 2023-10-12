@@ -1,6 +1,8 @@
 resource "aws_instance" "hhtest-ec2-bastion" {
 
-  ami                         = "ami-0454bb2fefc7de534"
+  #  ami                         = "ami-0454bb2fefc7de534"
+ami                         = "ami-00d253f3826c44195"
+
   associate_public_ip_address = "true"
   availability_zone           = "ap-northeast-2a"
 
