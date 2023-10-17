@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 2
+  replicas: 2  # 레플리카 추가
   selector:
     matchLabels:
       app: nginx
@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:1.16.1 # update the image
+        image: nginx:1.16.1 # update the image version.
         ports:
         - containerPort: 80
