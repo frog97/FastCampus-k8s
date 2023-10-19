@@ -1,0 +1,107 @@
+#로컬 k8s 실행
+minikube start --driver docker --cpus 4 --memory  16G
+
+kubectl apply --kustomize ./base 
+service/my-nginx created
+deployment.apps/my-nginx created
+
+kubectl get all
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/my-nginx-77d68d745c-bqzmr   1/1     Running   0          21s
+pod/my-nginx-77d68d745c-rdjrm   1/1     Running   0          21s
+
+NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP   21h
+service/my-nginx     ClusterIP   10.107.29.31   <none>        80/TCP    21s
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/my-nginx   2/2     2            2           21s
+
+NAME                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/my-nginx-77d68d745c   2         2         2       21s
+
+kubectl delete  --kustomize ./base && kubectl get all
+service "my-nginx" deleted
+deployment.apps "my-nginx" deleted
+NAME                            READY   STATUS        RESTARTS   AGE
+pod/my-nginx-77d68d745c-bqzmr   1/1     Terminating   0          67s
+pod/my-nginx-77d68d745c-rdjrm   1/1     Terminating   0          67s
+
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   21h
+
+kubectl kustomize ./dev                   
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: my-nginx
+  name: dev-my-nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    run: my-nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-my-nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: my-nginx
+  template:
+    metadata:
+      labels:
+        run: my-nginx
+    spec:
+      containers:
+      - image: nginx
+        name: my-nginx
+
+kubectl apply --kustomize ./dev && kubectl get all
+service/dev-my-nginx created
+deployment.apps/dev-my-nginx created
+NAME                                READY   STATUS              RESTARTS   AGE
+pod/dev-my-nginx-77d68d745c-6j4hr   0/1     ContainerCreating   0          1s
+pod/dev-my-nginx-77d68d745c-cwlh9   0/1     ContainerCreating   0          1s
+
+NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/dev-my-nginx   ClusterIP   10.104.122.151   <none>        80/TCP    1s
+service/kubernetes     ClusterIP   10.96.0.1        <none>        443/TCP   22h
+
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/dev-my-nginx   0/2     2            0           1s
+
+NAME                                      DESIRED   CURRENT   READY   AGE
+replicaset.apps/dev-my-nginx-77d68d745c   2         2         0       1s
+
+kubectl delete --kustomize ./dev && kubectl get all
+service "dev-my-nginx" deleted
+deployment.apps "dev-my-nginx" deleted
+NAME                                READY   STATUS        RESTARTS   AGE
+pod/dev-my-nginx-77d68d745c-6j4hr   1/1     Terminating   0          35s
+pod/dev-my-nginx-77d68d745c-cwlh9   1/1     Terminating   0          35s
+
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   22h
+
+kubectl apply --kustomize ./prod && kubectl get all 
+service/prod-my-nginx created
+deployment.apps/prod-my-nginx created
+NAME                                 READY   STATUS              RESTARTS   AGE
+pod/prod-my-nginx-77d68d745c-wswtl   0/1     ContainerCreating   0          0s
+pod/prod-my-nginx-77d68d745c-xk2kc   0/1     ContainerCreating   0          0s
+
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP   22h
+service/prod-my-nginx   ClusterIP   10.110.163.91   <none>        80/TCP    0s
+
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/prod-my-nginx   0/2     2            0           0s
+
+NAME                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/prod-my-nginx-77d68d745c   2         2         0       0s

@@ -1,0 +1,49 @@
+#로컬 k8s 실행
+minikube start --driver docker --cpus 4 --memory  16G
+
+kubectl kustomize ./  
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: my-nginx
+  name: my-nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    run: my-nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: my-nginx
+  template:
+    metadata:
+      labels:
+        run: my-nginx
+    spec:
+      containers:
+      - image: nginx
+        name: my-nginx
+        ports:
+        - containerPort: 80
+
+
+kubectl apply --kustomize ./ 
+
+kubectl get po
+NAME                        READY   STATUS    RESTARTS   AGE
+my-nginx-754c4d44b4-4zx7r   1/1     Running   0          32s
+my-nginx-754c4d44b4-gnllt   1/1     Running   0          32s
+ 
+kubectl delete --kustomize ./
+service "my-nginx" deleted
+deployment.apps "my-nginx" deleted
+
