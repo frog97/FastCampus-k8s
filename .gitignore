@@ -58,3 +58,4 @@ out/
 .terraform/
 .vagrant/
 credential.txt
+stminikube.sh
