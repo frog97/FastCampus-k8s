@@ -35,3 +35,17 @@ REVISION        UPDATED                         STATUS          CHART           
 3               Tue Oct 31 08:28:51 2023        deployed        nginx-15.3.0    1.25.2          Rollback to 1   
 ```
 
+##  헬름 파일 가져오기
+```
+helm fetch --untar test-repo/nginx  --version 15.3.0      
+```
+
+```
+helm uninstall nginx
+helm ls
+```
+
+
+# custom helm chart 만들기 
+value.yaml 에 있는 내용들이 templates/deplyment.yaml이나 service.yaml등에 들어간다.
+templates/tests/test-connection.yaml응 테스트용 파일..
