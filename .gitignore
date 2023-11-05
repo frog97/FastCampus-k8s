@@ -59,3 +59,5 @@ out/
 .vagrant/
 credential.txt
 stminikube.sh
+Part4_Kubernetes/Chapter05/ssh-key/id_rsa
+Part4_Kubernetes/Chapter05/ssh-key/id_rsa.pub

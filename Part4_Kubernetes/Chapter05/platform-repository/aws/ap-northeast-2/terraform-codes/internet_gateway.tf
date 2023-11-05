@@ -1,8 +1,8 @@
-resource "aws_internet_gateway" "test-internet-gateway" {
+resource "aws_internet_gateway" "testhh-internet-gateway" {
 
   depends_on = [
-    aws_vpc.test-vpc
+    aws_vpc.testhh-vpc
   ]
 
-  vpc_id = aws_vpc.test-vpc.id
+  vpc_id = aws_vpc.testhh-vpc.id
 }

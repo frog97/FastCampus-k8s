@@ -1,45 +1,45 @@
-resource "aws_route_table" "test-route-table-pub-sub1" {
+resource "aws_route_table" "testhh-route-table-pub-sub1" {
 
   depends_on = [
-    aws_vpc.test-vpc,
-    aws_internet_gateway.test-internet-gateway
+    aws_vpc.testhh-vpc,
+    aws_internet_gateway.testhh-internet-gateway
   ]
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.test-internet-gateway.id
+    gateway_id = aws_internet_gateway.testhh-internet-gateway.id
   }
 
   tags = {
-    Name = "test-route-table-pub-sub1"
+    Name = "testhh-route-table-pub-sub1"
   }
 
   tags_all = {
-    Name = "test-route-table-pub-sub1"
+    Name = "testhh-route-table-pub-sub1"
   }
 
-  vpc_id = aws_vpc.test-vpc.id
+  vpc_id = aws_vpc.testhh-vpc.id
 }
 
-resource "aws_route_table" "test-route-table-pub-sub3" {
+resource "aws_route_table" "testhh-route-table-pub-sub3" {
 
   depends_on = [
-    aws_vpc.test-vpc,
-    aws_internet_gateway.test-internet-gateway
+    aws_vpc.testhh-vpc,
+    aws_internet_gateway.testhh-internet-gateway
   ]
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.test-internet-gateway.id
+    gateway_id = aws_internet_gateway.testhh-internet-gateway.id
   }
 
   tags = {
-    Name = "test-route-table-pub-sub3"
+    Name = "testhh-route-table-pub-sub3"
   }
 
   tags_all = {
-    Name = "test-route-table-pub-sub3"
+    Name = "testhh-route-table-pub-sub3"
   }
 
-  vpc_id = aws_vpc.test-vpc.id
+  vpc_id = aws_vpc.testhh-vpc.id
 }
