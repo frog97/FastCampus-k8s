@@ -44,3 +44,11 @@ Connect repo using SSH 입력 정보
 ```
 git@github.com:frog97/FastCampus-k8s.git
 ```
+
+# 사후 진행 사항
+```
+cd /home/frog/workspace/fast-k8s/FastCampus-k8s/Part4_Kubernetes/Chapter05/gitops-repository/management/argo-cd/scripts
+kubectl kustomize ../manifests/| kubectl delete -n argocd -f -
+cd /home/frog/workspace/fast-k8s/FastCampus-k8s/Part4_Kubernetes/Chapter05/gitops-repository/platform/aws/ap-northeast-2/terraform-codes
+terraform destroy -auto-approve
+```

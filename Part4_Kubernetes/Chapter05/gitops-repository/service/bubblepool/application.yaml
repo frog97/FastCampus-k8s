@@ -9,8 +9,10 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: bubblepool
-    repoURL: git@github.com:<Github Profile명>/service-repository.git
+    #path: bubblepool
+    #repoURL: git@github.com:<Github Profile명>/service-repository.git
+    path: Part4_Kubernetes/Chapter05/service-repository/bubblepool
+    repoURL: git@github.com:frog97/FastCampus-k8s.git
     targetRevision: HEAD
   syncPolicy:
     automated:

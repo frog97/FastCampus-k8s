@@ -10,9 +10,9 @@ ssh-add id_rsa
 ```
 ## total
 ```
-ssh-keygen -q -t rsa -N '' -m PEM -t rsa -b 4096 -C test -f ./id_rsa <<<y >/dev/null 2>&1
+ssh-keygen -q -t ecdsa -N '' -m PEM -t ecdsa -b 521 -C test -f ./id_ecdsa <<<y >/dev/null 2>&1
 eval `ssh-agent`
-ssh-add id_rsa
+ssh-add id_ecdsa
 ```
 
 # Github Repository 생성 및 설정
@@ -55,8 +55,3 @@ terraform init
 terraform plan
 terraform apply
 ```
-10
-02.
-Github
-Repository
-생성 및 설정
