@@ -55,8 +55,14 @@ kubectl 처리후 바로 ArgoCD Web UI에서 변경사항 확인 및 Refresh 버
 
 # 사후 진행 사항
 ```
+cd /home/frog/workspace/fast-k8s/FastCampus-k8s/Part4_Kubernetes/Chapter05/gitops-repository/service/guestbook
+kubectl delete -f application.yaml
+
+
 cd /home/frog/workspace/fast-k8s/FastCampus-k8s/Part4_Kubernetes/Chapter05/gitops-repository/management/argo-cd/scripts
 kubectl kustomize ../manifests/| kubectl delete -n argocd -f -
+
+
 cd /home/frog/workspace/fast-k8s/FastCampus-k8s/Part4_Kubernetes/Chapter05/gitops-repository/platform/aws/ap-northeast-2/terraform-codes
 terraform destroy -auto-approve
 ```

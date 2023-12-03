@@ -64,3 +64,4 @@ Part4_Kubernetes/Chapter05/ssh-key/id_rsa.pub
 Part4_Kubernetes/Chapter05/gitops-repository/management/argo-cd/scripts/id_ecdsa
 .gitignore
 Part4_Kubernetes/Chapter05/gitops-repository/management/argo-cd/scripts/id_ecdsa.pub
+Part4_Kubernetes/Chapter05/gitops-repository/management/argo-rollout/scripts/kubectl

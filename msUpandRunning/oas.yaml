@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: Airline
+  description: |
+    API for Airline
+  version: 1.0.1
+servers:
+  - url:  http://api.example.com/v1
+    description: 운영서버
+paths:
+  /reservations/{reservation_id}:
+
+    put:
+      # see https://swagger.io/docs/specification/describing-parameters
+      summary: Book or re-book a reservation, 예약/재예약
+      description : |
+        request sample: PUT http://api.example.com/v1/reservations/d2783fc5-0fee
+      parameters:
+        - name: reservation_id
+          in: path
+          required: true
+          description: 생성되거나 업데이트된 예약의 유니크 식별자
+          schema:
+            type: string
+            example: d2783fc5-0fee
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                outbound:
+                  type: object
+                  properties:
+                    flight_num:
+                      type: string
+                      example: "AA 253"
+                    flight_date:
+                      type: string
+                      example: "2021-08-31T08:01:00"
+                    seats:
+                      type: array
+                      items:
+                        type: string
+                      
+                returning:
+                  type: object
+                  properties:
+                    flight_num:
+                      type: string
+                      example: "AA 254"
+                    flight_date:
+                      type: string
+                      example: "2021-09-02T15:31:00"
+                    seats:
+                      type: array
+                      items:
+                        type: string
+      responses:
+        '200': # 응답 성공
+          description: 예약 성공
+          content:
+           application/json:
+             schema:
+               type: object
+               properties:
+                 reservation_id:
+                   type: string
+                   description: 신규 예약 식별자
+        '403':
+          description: setat unavilable. 예약 실패
+          content:
+            application/json:
+              schema:
+                type: string
+                description: 상세한 애러 객체 정보

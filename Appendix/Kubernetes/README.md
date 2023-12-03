@@ -15,6 +15,16 @@ $ chmod +x ./kubectl
 $ mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
 $ kubectl version --short --client
 ```
+
+```
+$ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+$ chmod +x ./kubectl
+$ mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+$ kubectl version --short --client
+```
+
+
+
 (3) Windows 설치
 1. Windows 운영 체제에 kubectl을 설치합니다.
 ```

@@ -1,2 +1,3 @@
 resources:
-  - https://github.com/<Github Profile명>/management-repository//argo-rollout?ref=main
+  - https://github.com/frog97/FastCampus-k8s//Part4_Kubernetes/Chapter05/management-repository/argo-rollout?ref=main
+#  - https://github.com/<Github Profile명>/management-repository//argo-rollout?ref=main

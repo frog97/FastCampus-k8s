@@ -25,7 +25,7 @@ kubectl get svc -A
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo #패스 워드 확인
 ```
 - 최종 출력되는 난수가 ArgoCD Web UI의 admin 패스워드
-Web UI 접속
+Web UI 접속>
 ```
 kubectl get svc argocd-server ‒n argocd
 ```
