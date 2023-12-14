@@ -1,10 +1,13 @@
 {{- if .Values.rbac.create }}
 kind: ClusterRole
-apiVersion: {{ include "rbac.apiVersion" . }}
+apiVersion: {{ template "rbac.apiVersion" . }}
 metadata:
-  name: {{ include "falco.fullname" . }}
+  name: {{ template "falco.fullname" .}}
   labels:
-    {{- include "falco.labels" . | nindent 4 }}
+    app: {{ template "falco.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
 rules:
   - apiGroups:
       - extensions
@@ -40,4 +43,17 @@ rules:
       - /healthz/*
     verbs:
       - get
+{{- if .Values.podSecurityPolicy.create }}
+  - apiGroups:
+      - policy
+    resources:
+      - podsecuritypolicies
+    resourceNames:
+      - {{ template "falco.fullname" . }}
+{{- if .Values.fakeEventGenerator.enabled }}
+      - event-generator-{{ template "falco.fullname" . }}
+{{- end }}
+    verbs:
+      - use
+{{- end }}
 {{- end }}

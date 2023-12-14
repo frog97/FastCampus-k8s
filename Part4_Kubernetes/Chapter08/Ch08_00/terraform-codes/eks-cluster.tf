@@ -7,7 +7,7 @@ resource "aws_eks_cluster" "testhh-eks-cluster" {
 
   name     = var.cluster-name
   role_arn = aws_iam_role.testhh-iam-role-eks-cluster.arn
-  version = "1.27"
+  version = "1.28"
 
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
