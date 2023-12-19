@@ -1,14 +1,16 @@
+```
+cd ../Ch08_00/terraform-codes
 terraform apply -auto-approve
 aws eks update-kubeconfig --region ap-northeast-2 --name testhh-eks-cluster
-
-
-terraform destroy -auto-approve
+```
 
 # 3. IAM Policy 및 Role 적용 (CloudWatch 로그 연동용) #1
 ## (1) Falco 로그 대상 CloudWatch 연동용 IAM Policy 적용 명령어
 - Chapter08 > Ch08_04-falco > aws
 ```
-aws iam create-policy --policy-name EKS-CloudWatchLogs --policy-document file://aws/iam_role_policy.json
+cd /home/frog/workspace/fast-k8s/FastCampus-k8s/Part4_Kubernetes/Chapter08/Ch08_04-falco/aws
+
+aws iam create-policy --policy-name EKS-CloudWatchLogs --policy-document file://iam_role_policy.json
 ```
 
 # 3. IAM Policy 및 Role 적용 (CloudWatch 로그 연동용) #2
@@ -28,11 +30,15 @@ aws iam attach-role-policy --role-name testhh-iam-role-eks-nodegroup --policy-ar
 - jsonOutput: false -> true
 ## (2) Falco Helm Chart 설치 명령어
 - Chapter08 > Ch08_04-falco > helm-chart
+cd 
 $ helm install falco ./
 ```
-cd helm-chart
+cd /home/frog/workspace/fast-k8s/FastCampus-k8s/Part4_Kubernetes/Chapter08/Ch08_04-falco/helm-chart
 helm install falco ./
+kubectl get po
 ```
+
+
 
 helm pull falcosecurity/falco --untar
 
@@ -96,4 +102,10 @@ kubectl not found
 > 
 > which kubectl
 /usr/local/bin/kubectl
+```
+
+마무리
+```
+cd ../Ch08_00/terraform-codes
+terraform destroy -auto-approve
 ```
